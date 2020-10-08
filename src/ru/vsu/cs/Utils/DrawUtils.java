@@ -8,7 +8,7 @@ public class DrawUtils {
         for (int i = 0; i < raysCount; i++) {
             double dx = r * Math.cos(deg * i);
             double dy = r * Math.sin(deg * i);
-            ld.drawLine(x,y,x + (int)dx,y + (int)dy);
+            ld.drawLine(x,y,x - (int)dx,y - (int)dy);
         }
     }
 

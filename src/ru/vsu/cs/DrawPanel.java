@@ -1,6 +1,7 @@
 package ru.vsu.cs;
 
 import ru.vsu.cs.Utils.DrawUtils;
+import ru.vsu.cs.line_drawers.BriesenhamLineDrawer;
 import ru.vsu.cs.line_drawers.DDALineDrawer;
 import ru.vsu.cs.line_drawers.GraphicsLineDrawer;
 import ru.vsu.cs.line_drawers.WooLineDrawer;
@@ -24,7 +25,7 @@ public class DrawPanel extends JPanel implements MouseMotionListener {
     public void paint(Graphics g) {
         BufferedImage bi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics bi_g = bi.createGraphics();
-        LineDrawer ld = new GraphicsLineDrawer(bi_g);
+        LineDrawer ld = new BriesenhamLineDrawer(new GraphicsPixelDrawer(bi_g));
         bi_g.fillRect(0,0,getWidth(),getHeight());
         bi_g.setColor(Color.BLACK);
         drawAll(ld);
