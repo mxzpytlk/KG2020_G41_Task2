@@ -5,8 +5,9 @@ import ru.vsu.cs.PixelDrawer;
 
 import java.awt.*;
 
+
 public class WooLineDrawer implements LineDrawer {
-    private PixelDrawer pd;
+    private final PixelDrawer pd;
 
     public WooLineDrawer(PixelDrawer pd) {
         this.pd = pd;
@@ -14,54 +15,33 @@ public class WooLineDrawer implements LineDrawer {
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
-        if (x2 < x1) {
-            x1 += x2;
-            x2 = x1 - x2;
-            x1 -= x2;
-            y1 += y2;
-            y2 = y1 - y2;
-            y1 -= y2;
-        }
-        int dx = x2 - x1;
-        int dy = y2 - y1;
-
-        if (dx == 0 || dy == 0) {
-            new BriesenhamLineDrawer(pd).drawLine(x1, y1, x2, y2);
-            return;
+        boolean steep = Math.abs(y1 - y2) > Math.abs(x1 - x2);
+        if (steep) {
+            int temp = x1; x1 = y1; y1 = temp;
+            temp = x2; x2 = y2; y2 = temp;
         }
 
-        float gradient;
-        pd.setPixel(x1, y1, Color.BLACK);
-
-        if (dx > dy) {
-            gradient = (float) dy / dx;
-            float intery = y1 + gradient;
-            for (int x = x1; x < x2; ++x) {
-                pd.setPixel(x, (int) intery,
-                        new Color(0, 0, 0, (int) (255 - fractionalPart(intery) * 255)));
-
-                pd.setPixel(x, (int)intery + 1,
-                        new Color(0, 0, 0, (int) (fractionalPart(intery) * 255)));
-
-                intery += gradient;
-            }
-        } else {
-            gradient = (float) dx / dy;
-            float interx = x1 + gradient;
-            for (int y = y1; y < y2; ++y) {
-                pd.setPixel((int) interx, y,
-                        new Color(0, 0, 0, (int) (255 - fractionalPart(interx) * 255)));
-
-                pd.setPixel((int) interx + 1, y,
-                        new Color(0, 0, 0, (int) (fractionalPart(interx) * 255)));
-                interx += gradient;
-            }
+        if (x1 > x2) {
+            int temp = x1; x1 = x2; x2 = temp;
+            temp = y1; y1 = y2; y2 = temp;
         }
 
-        pd.setPixel(x2, y2, Color.BLACK);
-    }
+        double dx = x2 - x1;
+        double dy = y2 - y1;
 
-    private float fractionalPart(float x) {
-        return x - (int)x;
+        double gradient = dy / dx;
+        double y = y1 + gradient;
+        for (int x = x1 + 1; x < x2; ++x) {
+            int intY = (int) y;
+            pd.setPixel(
+                    steep ? intY + 1 : x, steep ? x : intY + 1,
+                    new Color(0, 0, 0, (float)  (y - intY))
+            );
+            pd.setPixel(
+                    steep ? intY : x, steep ? x : intY,
+                    new Color(0, 0, 0, (float)  (1 - (y - intY)))
+            );
+            y += gradient;
+        }
     }
 }
